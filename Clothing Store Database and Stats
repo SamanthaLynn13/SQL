@@ -1,0 +1,28 @@
+--create a clothing store database
+
+CREATE TABLE store (id INTEGER PRIMARY KEY, product_name TEXT, price INTEGER, color TEXT, location TEXT);
+
+INSERT INTO store VALUES (1, "shirt", 15, "blue", "table");
+INSERT INTO store VALUES (2, "pants", 30, "black", "rack");
+INSERT INTO store VALUES (3, "jacket", 45, "demin", "rack");
+INSERT INTO store VALUES (4, "tank_top", 10, "white", "table");
+INSERT INTO store VALUES (5, "shirt", 15, "orange", "table");
+INSERT INTO store VALUES (6, "pants", 35, "white", "rack");
+INSERT INTO store VALUES (7, "jacket", 45, "pink", "rack");
+INSERT INTO store VALUES (8, "tank_top", 10, "gray", "table");
+INSERT INTO store VALUES (9, "socks", 7, "black", "display");
+INSERT INTO store VALUES (10, "underwear", 12, "red", "drawer");
+INSERT INTO store VALUES (11, "bodysuit", 20, "tan", "rack");
+INSERT INTO store VALUES (12, "sweater", 28, "light_blue", "rack");
+INSERT INTO store VALUES (13, "sweatpants", 30, "purple", "table");
+INSERT INTO store VALUES (14, "sweatshirt", 35, "green", "rack");
+INSERT INTO store VALUES (15, "socks", 7, "blue", "display");
+SELECT * FROM store;
+
+--display the database ordered by price
+
+SELECT * FROM store ORDER BY price;
+
+--what is the most expensive item in my store?
+
+SELECT product_name, MAX(price) FROM store
