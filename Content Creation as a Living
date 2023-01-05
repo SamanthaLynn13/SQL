@@ -68,6 +68,7 @@ LEFT JOIN advertise
 ON content_creators.name = advertise.name
 ORDER BY followers;
 
+
 DO CONTENT CREATORS WITH MORE FOLLOWERS GENERATE MORE REVENUE?
 
 SELECT content_creators.name, content_creators.followers, content_profits.profit
@@ -75,3 +76,11 @@ FROM content_creators
 JOIN content_profits
 ON content_creators.name = content_profits.name
 ORDER BY profit desc;
+
+
+WHAT CONTENT TYPE IS SHARED ON EACH PLATFORM?
+
+SELECT content_creators.name AS Content_Creator, content_creators.contenttype AS Content_Type, b.platform
+FROM content_creators
+JOIN content_creators b
+ON content_creators.id = b.id;
