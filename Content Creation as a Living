@@ -1,1 +1,77 @@
+CREATE TABLE content_creators (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    contenttype TEXT,
+    platform TEXT,
+    followers INTEGER);
 
+INSERT into content_creators (name, contenttype, platform, followers)
+VALUES ("Dope Kitchen", "comedy videos", "Instagram", 157000);
+
+INSERT into content_creators (name, contenttype, platform, followers)
+VALUES ("Annies Analytics", "data analysis journey", "TikTok", 37400);
+
+INSERT into content_creators (name, contenttype, platform, followers)
+VALUES ("marillewellyn", "fitness", "Instagram", 1600000);
+
+INSERT into content_creators (name, contenttype, platform, followers)
+VALUES ("Charlotte Chaze", "break into tech", "TikTok", 329900);
+
+INSERT into content_creators (name, contenttype, platform, followers)
+VALUES ("The Holistic Behaviorist", "Holistic Health Services", "Instagram", 2725);
+
+INSERT into content_creators (name, contenttype, platform, followers)
+VALUES ("Cricut Maker Crafts", "Cricut Tutorials", "Tiktok", 77800);
+
+CREATE TABLE advertise (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    share_ad TEXT);
+
+INSERT INTO advertise (name, share_ad)
+VALUES ("Dope Kitchen", "yes");
+
+INSERT INTO advertise (name, share_ad)
+VALUES ("marillewellyn", "yes");
+
+INSERT INTO advertise (name, share_ad)
+VALUES ("Charlotte Chaze", "yes");
+
+CREATE TABLE content_profits (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    profit INTEGER);
+
+INSERT INTO content_profits (name, profit)
+VALUES ("Dope Kitchen", 75000);
+
+INSERT INTO content_profits (name, profit)
+VALUES ("Annies Analytics", 5000);
+
+INSERT INTO content_profits (name, profit)
+VALUES ("marillewellyn", 1300000);
+
+INSERT INTO content_profits (name, profit)
+VALUES ("Charlotte Chaze", 80000);
+
+INSERT INTO content_profits (name, profit)
+VALUES ("The Holistic Behaviorist", 600);
+
+INSERT INTO content_profits (name, profit)
+VALUES ("Cricut Maker Crafts", 7000);
+
+DO CONTENT CREATORS WITH MORE FOLLOWERS ADVERTISE ON THEIR PROFILES?
+
+SELECT content_creators.name, content_creators.followers, advertise.share_ad
+FROM content_creators
+LEFT JOIN advertise
+ON content_creators.name = advertise.name
+ORDER BY followers;
+
+DO CONTENT CREATORS WITH MORE FOLLOWERS GENERATE MORE REVENUE?
+
+SELECT content_creators.name, content_creators.followers, content_profits.profit
+FROM content_creators
+JOIN content_profits
+ON content_creators.name = content_profits.name
+ORDER BY profit desc;
