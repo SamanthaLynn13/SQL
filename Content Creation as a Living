@@ -60,6 +60,20 @@ VALUES ("The Holistic Behaviorist", 600);
 INSERT INTO content_profits (name, profit)
 VALUES ("Cricut Maker Crafts", 7000);
 
+CREATE TABLE collaborations (
+    id INTEGER PRIMARY KEY,
+    collab1 INTEGER,
+    collab2 INTEGER); 
+    
+INSERT into collaborations (collab1, collab2)
+VALUES (1, 2);
+
+INSERT into collaborations (collab1, collab2)
+VALUES (3, 4);
+
+INSERT into collaborations (collab1, collab2)
+VALUES (5, 6);
+
 DO CONTENT CREATORS WITH MORE FOLLOWERS ADVERTISE ON THEIR PROFILES?
 
 SELECT content_creators.name, content_creators.followers, advertise.share_ad
@@ -84,3 +98,11 @@ SELECT content_creators.name AS Content_Creator, content_creators.contenttype AS
 FROM content_creators
 JOIN content_creators b
 ON content_creators.id = b.id;
+
+WHICH CONTENT CREATORS COLLABORATED?
+
+SELECT a.name, b.name FROM collaborations
+JOIN content_creators a
+ON collaborations.collab1 = a.id
+JOIN content_creators b
+ON collaborations.collab2 = b.id;
