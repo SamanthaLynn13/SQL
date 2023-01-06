@@ -1,3 +1,5 @@
+*All data created for purpose of project showing JOIN skills*
+
 CREATE TABLE content_creators (
     id INTEGER PRIMARY KEY,
     name TEXT,
