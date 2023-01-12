@@ -1,6 +1,6 @@
 # For this project, I used City Bike Lane data from Break Into Tech Certification Course.
 # Then I created a table to insert City Bike Lane data into.
-# Finally, I performed analytics on the data using SQL - CTEs.
+# Finally, I performed analytics on the data using SQL - CTEs and Window Functions.
 
 CREATE TABLE BIT_DB.CityBikeLanes (
 id integer primary key,
@@ -25,5 +25,16 @@ SELECT street, average_safetyrating, 'Safe Lane'
 FROM safety_average_CTE
 WHERE average_safetyrating >=4.0
 
+# Now, the city has decided to remove the least safe bike lanes, make improvements on the bike lanes that are already somewhat safe, 
+and leave the most safe bike lanes as-is. You need to give your boss the list of all the bike lanes, 
+both safety ratings for each lane given by the two technicians, the average safety rating for each lane, 
+and a label with the recommendation as "Remove", "Leave As-Is", or "Improvements Needed".
 
+SELECT street, safetyrating,
+AVG(safetyrating) OVER (PARTITION BY street) as "Average_safety_rating",
+CASE WHEN AVG(safetyrating) OVER (PARTITION BY safetyrating) >= 4 THEN "Leave As-Is"
+    WHEN AVG(safetyrating) OVER (PARTITION BY safetyrating) < 2.5 THEN "Remove"
+    ELSE  "Improvements Needed"
+    END AS "Recommendation"
+FROM CityBikeLanes
 
