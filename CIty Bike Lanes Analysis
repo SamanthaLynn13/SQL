@@ -1,1 +1,29 @@
+# For this project, I used City Bike Lane data from Break Into Tech Certification Course.
+# Then I created a table to insert City Bike Lane data into.
+# Finally, I performed analytics on the data using SQL - CTEs.
+
+CREATE TABLE BIT_DB.CityBikeLanes (
+id integer primary key,
+year_installed year not null,
+year_updated year not null,
+street varchar not null,
+width_feet integer not null,
+safetyrating integer not null,
+protected varchar not null)
+
+# Scenario: Your boss wants a list of all the bike lanes that have an average safety rating of 4.0 or higher. 
+She also wants to see the average safety rating for each of those bike lanes, and a label that says "Safe Lane".
+Provide these results using a CTE.
+
+WITH safety_average_CTE AS (
+SELECT C.street,
+AVG(safetyrating) as average_safetyrating
+FROM CityBikeLanes C
+GROUP BY C.street)
+
+SELECT street, average_safetyrating, 'Safe Lane'
+FROM safety_average_CTE
+WHERE average_safetyrating >=4.0
+
+
 
