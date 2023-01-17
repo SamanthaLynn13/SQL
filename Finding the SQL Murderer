@@ -1,0 +1,135 @@
+# Step 1: To view how the dates were entered into the database
+
+SELECT * FROM crime_scene_report LIMIT 5
+
+
+# Step 2: To find the crime scene report from the police department’s database.
+
+SELECT * FROM crime_scene_report
+WHERE date = 20180115
+AND type = "murder"
+AND city = "SQL City"
+
+Security footage shows that there were 2 witnesses. 
+The first witness lives at the last house on "Northwestern Dr". The second witness, named Annabel, lives somewhere on "Franklin Ave".
+
+
+# Step 3: find the names of the 2 witnesses.
+	
+This finds the name and id (since the interview data does not include the person’s name, we need their id) 
+of the person with the highest address # on the street ‘Northwestern Dr’: 
+
+SELECT id, name, address_street_name, address_number FROM person
+WHERE address_street_name LIKE '%Northwestern Dr%'
+ORDER BY address_number desc
+
+	Morty Schapiro - 4919 Northwestern Dr
+	ID = 14887
+
+	This finds the name and id of Anabel on ‘Franklin Ave’:
+
+SELECT id, name, address_street_name, address_number FROM person
+WHERE address_street_name = 'Franklin Ave'
+ORDER BY name asc
+
+Annabel Miller - 103 Franklin Ave
+ID = 16371
+
+# Step 4: ensure that the id in the person’s table matches the person id in the interview table.
+
+SELECT person.name, interview.person_id
+FROM person
+JOIN interview
+ON person.id = interview.person_id
+WHERE person.name = 'Morty Schapiro'
+
+# Step 5: find the transcript text from the interviews of Morty Schapiro and Annabel Miller.
+
+Morty Schapiro’s interview:
+	
+SELECT transcript text
+FROM interview
+WHERE person_id = 14887
+
+	Morty: I heard a gunshot and then saw a man run out. He had a "Get Fit Now Gym" bag. The 
+membership number on the bag started with "48Z". Only gold members have those bags. The man got into a car with a plate that included "H42W".
+
+Annabel Miller’s interview:
+
+SELECT transcript text
+FROM interview
+WHERE person_id = 16371
+
+  I saw the murder happen, and I recognized the killer from my gym when I was working out last week on January the 9th.
+  
+# Step 6: use the interview information to find the membership number
+
+SELECT membership_id, check_in_date
+FROM get_fit_now_check_in
+WHERE membership_id LIKE '48Z%'
+AND check_in_date = 20180109
+
+Two possibilities:
+48Z7A
+48Z55
+
+# Step 7: use the membership number and gold status to find the members’ names & person ids.
+
+SELECT id, membership_status, name, person_id
+FROM get_fit_now_member
+WHERE id IN ('48Z7A', '48Z55')
+AND membership_status = 'gold'
+
+Jeremy Bowers 67318
+Joe Germuska 28819
+
+# Step 8: find any facebook event checkins for possible suspects.
+
+SELECT *
+FROM facebook_event_checkin
+WHERE person_id IN ('183779', '423327', '664760', '28819', '67318')
+
+Jeremy Bowers checked in to something on the date of the murder, leaving Joe Germuska as the primary suspect. This could also be an alibi. 
+
+# Step 9: So, let’s double check the interview information for the two suspects to see if we are missing anything. 
+
+SELECT *
+FROM interview
+WHERE person_id IN ('183779', '423327', '664760', '28819', '67318')
+
+We then find a confession that leads us to the real person behind the crime.
+
+MURDERER = Jeremy Bowers
+
+Congrats, you found the murderer! But wait, there's more... If you think you're up for a challenge, try querying the interview transcript 
+of the murderer to find the real villain behind this crime. 
+
+# Step 10: find the license  id of the woman with this info 
+
+SELECT *
+FROM drivers_license
+WHERE height BETWEEN 65 AND 67
+AND hair_color = 'red'
+AND car_make = 'Tesla'
+AND car_model = 'Model S'
+
+# Step 11: find the names, ids, annual income of the women with these license ids.
+
+SELECT person.license_id, person.name, person.ssn, income.annual_income, person.id
+FROM person
+JOIN income
+ON person.ssn = income.ssn
+WHERE license_id IN ('202298','291182','918773')
+
+# Step 12: find the person id who went to the SQL Symphony Concert 3 times in 12/2017
+
+SELECT *
+FROM facebook_event_checkin
+WHERE person_id IN ('78881', '99716')
+AND event_name = 'SQL Symphony Concert'
+AND date LIKE '201712%'
+
+Brains behind the murder = Miranda Priestly
+
+
+
