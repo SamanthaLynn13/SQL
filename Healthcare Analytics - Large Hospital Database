@@ -121,4 +121,12 @@ LIMIT 1;
 
 -- #14 What is our patient mix for patients who had an inpatient encounter in 2019?
 
-
+Select gender, race, ethnicity, COUNT(*) as Volumes
+FROM Healthcare.encounters enc
+JOIN Healthcare.patients pat
+ON enc.PATIENT = pat.Id
+WHERE START >= '2019-01-01 AND START' 
+AND START < '2020-01-01'
+AND ENCOUNTERCLASS = 'inpatient'
+GROUP BY gender, race, ethnicity
+ORDER BY Volumes desc;
