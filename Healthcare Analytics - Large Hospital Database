@@ -96,8 +96,29 @@ GROUP BY gender, race, ethnicity;
 
 -- #11 What is our patient mix by age?
 
+Select id, birthdate, FLOOR(datediff(curdate(), birthdate)/365.25) AS Age_in_years
+FROM Healthcare.patients;
+
 -- #12 How many states and zip codes do we treat patients from?
 
--- #13 Which state, zip, and country do we treat the most patients from?
+Select distinct state
+FROM Healthcare.patients
+GROUP BY state;
+  --found only 1 state
+
+Select distinct zip, count(*)
+FROM Healthcare.patients
+GROUP BY zip;
+  --found many zip codes missing in the patient data, so for the next question I focused on county
+
+-- #13 Which state, zip, and county do we treat the most patients from?
+
+Select distinct county, count(*)
+FROM Healthcare.patients
+GROUP BY county
+ORDER BY count(*) desc
+LIMIT 1;
 
 -- #14 What is our patient mix for patients who had an inpatient encounter in 2019?
+
+
