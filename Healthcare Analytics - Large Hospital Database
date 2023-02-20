@@ -41,10 +41,35 @@ WHERE START >= '2019-01-01 AND START'
 AND START < '2020-01-01'
 AND ENCOUNTERCLASS = 'ambulatory';
 
---#5 How many patient encounters did we have that did not require an overnight bed in the hospital?
+-- #5 How many patient encounters did we have that did not require an overnight bed in the hospital?
 
 Select COUNT(distinct id)
 FROM Healthcare.encounters 
 WHERE START >= '2019-01-01 AND START' 
 AND START < '2020-01-01'
 AND ENCOUNTERCLASS IN ('ambulatory', 'wellness', 'outpatient', 'urgentcare');
+
+-- #6 How many encounters did we have before the year 2020?
+
+Select COUNT(distinct id)
+FROM Healthcare.encounters 
+WHERE START < '2020-01-01';
+
+-- #7 How many distinct patients did we treat before the year 2020?
+
+Select COUNT(distinct patient)
+FROM Healthcare.encounters 
+WHERE START < '2020-01-01';
+
+-- #8 How many distinct encounters classes are documented in the Healthcare.encounters table?
+
+Select COUNT(distinct encounterclass)
+FROM Healthcare.encounters 
+WHERE START < '2020-01-01';
+
+-- #9 How many inpatient and ambulatory encounters did we have before 2020?
+
+Select COUNT(distinct id)
+FROM Healthcare.encounters 
+WHERE START < '2020-01-01'
+AND encounterclass IN ('inpatient', 'ambulatory')
