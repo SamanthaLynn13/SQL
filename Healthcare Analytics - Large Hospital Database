@@ -1,0 +1,50 @@
+In this project, I cleaned a database containing patient health information to upload into SQLiteStudio. 
+-- All data used is for training purposes and is not subject to HIPAA.
+
+--First, I familiarized myself with the data in the Healthcare database. I did this using this query:
+
+SELECT *
+FROM Healthcare.allergies
+LIMIT 1000;
+
+-- Then, I executed this query for each of the 16 tables.
+
+-- I analyzed the healthcare data to identify insights on patient experiences, hospital operations, types of visits, etc.
+
+-- #1 How many encounters did we have in 2019?
+
+Select COUNT(*) 
+FROM Healthcare.encounters 
+WHERE START >= '2019-01-01 AND START' 
+AND START < '2020-01-01';
+
+-- #2 How many distinct patients did we treat in 2019?
+
+Select COUNT(distinct patient)
+FROM Healthcare.encounters 
+WHERE START >= '2019-01-01 AND START' 
+AND START < '2020-01-01';
+
+-- #3 How many inpatient encounters did we have?
+
+Select COUNT(distinct id)
+FROM Healthcare.encounters 
+WHERE START >= '2019-01-01 AND START' 
+AND START < '2020-01-01'
+AND ENCOUNTERCLASS = 'inpatient';
+
+-- #4 How many ambulatory encounters did we have?
+
+Select COUNT(distinct id)
+FROM Healthcare.encounters 
+WHERE START >= '2019-01-01 AND START' 
+AND START < '2020-01-01'
+AND ENCOUNTERCLASS = 'ambulatory';
+
+--#5 How many patient encounters did we have that did not require an overnight bed in the hospital?
+
+Select COUNT(distinct id)
+FROM Healthcare.encounters 
+WHERE START >= '2019-01-01 AND START' 
+AND START < '2020-01-01'
+AND ENCOUNTERCLASS IN ('ambulatory', 'wellness', 'outpatient', 'urgentcare');
