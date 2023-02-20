@@ -1,7 +1,7 @@
 In this project, I cleaned a database containing patient health information to upload into SQLiteStudio. 
 -- All data used is for training purposes and is not subject to HIPAA.
 
---First, I familiarized myself with the data in the Healthcare database. I did this using this query:
+-- First, I familiarized myself with the data in the Healthcare database. I did this using this query:
 
 SELECT *
 FROM Healthcare.allergies
@@ -73,3 +73,31 @@ Select COUNT(distinct id)
 FROM Healthcare.encounters 
 WHERE START < '2020-01-01'
 AND encounterclass IN ('inpatient', 'ambulatory');
+
+-- #10 What is our patient mix by gender, race, and ethnicity?
+
+Select gender, COUNT(*) as Number_of_patients
+FROM Healthcare.patients
+GROUP BY gender;
+
+Select race, COUNT(*) as Number_of_patients
+FROM Healthcare.patients
+GROUP BY race;
+
+Select ethnicity, COUNT(*) as Number_of_patients
+FROM Healthcare.patients
+GROUP BY ethnicity;
+
+-- Or, you can examine the statistics within one query output table:
+
+Select gender, race, ethnicity, COUNT(*) as Number_of_patients
+FROM Healthcare.patients
+GROUP BY gender, race, ethnicity;
+
+-- #11 What is our patient mix by age?
+
+-- #12 How many states and zip codes do we treat patients from?
+
+-- #13 Which state, zip, and country do we treat the most patients from?
+
+-- #14 What is our patient mix for patients who had an inpatient encounter in 2019?
