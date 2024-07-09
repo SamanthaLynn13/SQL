@@ -1,0 +1,190 @@
+--task: identify customer metrics for the annual period of 3/5/22-3/3/23 and 3/4/23-3/7/23. Looking to identify how many customer were
+ new (never purchased before, sample starting in 2022) or retained (has purchased before). Purpose of this analysis
+is to identify a purchasing cadence for our marketing team. This helps them define promotions and improve customer 
+experience, in turn driving repeat purchases (loyalty) and improve customer experience.
+--solution: 
+--1. create a cte that identifies a customer's first order date using a windows function. 
+	email address associated with an order = a customer filter the time period from the start of 2022 to the end of the annual period
+--2. select all columns from the cte, along with a column that uses a case when to compare an order's create date/time 
+	to the first order date for the customer. if the first order date = the order's create date/time, then that is a new customer. 
+	if the first order date is not equal to the order's create date/time, then it is a returning customer
+--3. filter the query to consider all purchases with a create date/time in the annual periods of 3/5/22-3/3/23 and 3/4/23-3/7/23
+
+with firstordercte as 
+(SELECT 
+order_number
+,create_date_time
+,email_address 
+,MIN(create_date_time) OVER (PARTITION BY email_address) as first_order_date s
+,product_revenue 
+,shipping_revenue
+,order_total
+FROM db.salesorders 
+WHERE create_date BETWEEN '2022-01-01' AND '2023-06-03' AND order_type = 'VIRTUAL')
+
+select 
+order_number
+,create_date_time
+,email_address 
+,first_order_date 
+,case when 
+create_date_time = first_order_date then 'First Purchase' 
+else 'not first purchase' 
+end as 'New or return?' 
+,product_revenue 
+,shipping_revenue
+,order_total 
+FROM firstordercte
+
+WHERE create_date_time BETWEEN '2022-06-05' AND '2023-06-03'
+
+--determine first & repeat customers between 2022-2023 period
+with firstordercte as 
+(SELECT 
+order_number
+,create_date_time
+,email_address 
+,MIN(create_date_time) OVER (PARTITION BY email_address) as first_order_date s
+,product_revenue 
+,shipping_revenue
+,order_total
+FROM db.salesorders 
+WHERE create_date BETWEEN '2022-01-01' AND '2024-03-07' AND order_type = 'VIRTUAL')
+
+select 
+order_number
+,create_date_time
+,email_address 
+,first_order_date 
+,case when 
+create_date_time = first_order_date then 'First Purchase' 
+else 'not first purchase' 
+end as 'New or return?' 
+,product_revenue 
+,shipping_revenue
+,order_total 
+FROM firstordercte
+
+WHERE create_date_time BETWEEN '2022-03-05' AND '2023-03-03'
+
+
+--determine first & repeat customers between 2023-2024 period
+select 
+order_number
+,create_date_time
+,email_address 
+,first_order_date 
+,case when 
+create_date_time = first_order_date then 'First Purchase' 
+else 'not first purchase' 
+end as 'New or return?' 
+,product_revenue 
+,shipping_revenue
+,order_total 
+FROM firstordercte
+
+WHERE create_date_time BETWEEN '2023-03-04' AND '2023-03-07'
+
+
+--determine average # of days between 1st and 2nd purchases within the last year's period
+
+with firstordercte as 
+(SELECT 
+order_number
+,create_date_time
+,email_address 
+,MIN(create_date_time) OVER (PARTITION BY email_address) as first_order_date s
+,product_revenue 
+,shipping_revenue
+,order_total
+FROM db.salesorders 
+WHERE create_date BETWEEN '2022-01-01' AND '2024-03-07' AND order_type = 'VIRTUAL')
+
+,filtereddata AS 
+(SELECT
+ *
+ ,ROW_NUMBER() OVER (PARTITION BY email_address ORDER BY create_date_time) AS occurrence_number
+  ,CASE
+      WHEN create_date_time = first_order_date THEN 'First Purchase'
+      ELSE 'not first purchase'
+      END AS 'New or return?'
+ FROM firstordercte
+WHERE create_date_time BETWEEN '2023-03-03' AND '2024-03-07')
+
+,SecondPurchases AS 
+(    SELECT
+    FD1.*,
+    FD2.create_date_time AS previous_order_date,
+    DATEDIFF(day, FD2.create_date_time, FD1.create_date_time) AS date_difference
+    FROM FilteredData FD1
+    JOIN FilteredData FD2
+    ON FD1.email_address = FD2.email_address
+    AND FD1.occurrence_number = 2
+    AND FD2.occurrence_number = 1
+)
+
+SELECT AVG(date_difference)
+FROM SecondPurchases
+WHERE date_difference > 0
+
+
+--determine the product revenue, shipping revenue, order total, and order count for both new and returning customers for each year's period
+
+with firstordercte as 
+(SELECT 
+order_number
+,create_date_time
+,email_address 
+,MIN(create_date_time) OVER (PARTITION BY email_address) as first_order_date 
+,product_revenue 
+,shipping_revenue
+,order_total
+FROM db.salesorders 
+WHERE create_date BETWEEN 
+'2022-01-01' AND '2023-03-03' 
+--'2022-01-01' AND '2024-03-07' --uncomment this date filter when finding last year's data 
+AND order_type = 'VIRTUAL')
+
+,neworreturn as
+(select order_number
+,create_date_time
+,email_address 
+,first_order_date
+,case when create_date_time = first_order_date then 'First Purchase'
+else 'not first purchase'
+end as 'New or return?'
+,product_revenue 
+,shipping_revenue
+,order_total
+FROM
+firstordercte
+WHERE CREDATTIM_0 BETWEEN 
+'2022-03-05' AND '2023-03-03'
+--'2023-03-04 and '2024-03-07' --uncomment this date filter when finding last year's data
+)
+
+--determine the product revenue, shipping revenue, order total, and order count for both new and returning customers
+
+select [New or return?]
+,sum(neworreturn.product_revenue) as SUMPRODUCTREV
+,sum(neworreturn.shipping_revenue) AS SUMSHIPPINGREV
+,sum(neworreturn.order_total) AS SUMORDERTOTAL
+,count(neworreturn.order_number)
+,count(distinct neworreturn.email_address )
+FROM firstordercte
+join neworreturn on firstordercte.order_number = neworreturn.order_number
+group by [New or return?]
+
+--determine the product revenue, shipping revenue, order total, and order count for both new and returning customers PER MONTH
+
+select [New or return?]
+,DATEPART(month, neworreturn.create_date_time) as month
+,DATEPART(YEAR, neworreturn.create_date_time) as year
+,sum(neworreturn.product_revenue) as SUMPRODUCTREV
+,sum(neworreturn.shipping_revenue) AS SUMSHIPPINGREV
+,sum(neworreturn.order_total) AS SUMORDERTOTAL
+,count(neworreturn.order_number)
+,count(distinct neworreturn.email_address )
+FROM firstordercte
+join neworreturn on firstordercte.order_number = neworreturn.order_number
+group by [New or return?],DATEPART(month, neworreturn.create_date_time),DATEPART(YEAR, neworreturn.create_date_time)
